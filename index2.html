@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        //HW10 Замыкания
+
+        //makeProfileTimer
+
+        // function makeProfileTimer(){
+        //     let time = performance.now();
+        //     return ()=>{ return performance.now() - time; }
+        // }
+        // var timer = makeProfileTimer()
+        // alert('Замеряем время работы этого alert');  //некий код, время выполнения которого мы хотим измерить с высокой точностью
+        // alert(timer());
+
+        //makeSaver
+
+        // function makeSaver(func){
+        //     let f = func;
+        //     let called = false;//=true, если вызов функции БЫЛ
+        //     let result = null;
+        //     return ()=>{ 
+        //         if(called){
+        //             return result;
+        //         }else{
+        //             result = f(); 
+        //             called = true;
+        //             return result 
+        //         }
+        //     }
+        // }
+        // var saver = makeSaver(Math.random) //создает функцию-хранилище результата переданной в качестве параметра функции (Math.random 
+        //                                 // в примере). На этом этапе Math.random НЕ вызывается
+        // var value1 = saver()              //saver вызывает переданную в makeSaver функцию, запоминает результат и возвращает его
+        // var value2 = saver()              //saver в дальнейшем просто хранит результат функции, и более НЕ вызывает переданную 
+        //                                 //в makeSaver функцию;
+        // console.log(value1 === value2,  value1)                 // всегда true
+
+        // var saver2 = makeSaver(() => console.log('saved function called') || [null, undefined, false, '', 0, Math.random()][Math.ceil(Math.random()*6)])
+        // var value3 = saver2()
+        // var value4 = saver2()
+        // console.log(value3 === value4, value3) // тоже должно быть true
+                        
+        // let namePrompt = prompt.bind(window, 'Как тебя зовут?')
+        // let nameSaver = makeSaver(namePrompt)
+        // console.log(`Привет! Prompt еще не было!`)
+        // console.log(`Привет ${nameSaver()}. Только что запустился prompt, первый и последний раз`)
+        // console.log(`Слушай, ${nameSaver()}, го пить пиво. Ведь prompt был только один раз`)
+
+        //Final Countdown
+        // (function createCounter(){
+        //     let count = 5;
+        //     function showData(){
+        //         count
+        //             ? console.log(count, '//пауза 1 секунда')
+        //             : console.log('"поехали"');
+        //         if(--count >= 0){
+        //             setTimeout(showData,1000);
+        //         }
+        //     }
+        //     return showData
+        // }()).call()
+
+        //myBind
+
+        function myBind(func, area, arr){
+            let _func = func;
+            let _area = area;
+            let _params = arr.slice(0)
+            return (p1, p2, p3, p4, p5, p6, p7, p8, p9)=>{ 
+                let params = [];
+                function add(p){
+                    if(p !== undefined){
+                        params.push(p);
+                    }
+                }
+                add(p1);
+                add(p2);
+                add(p3);
+                add(p4);
+                add(p5);
+                add(p6);
+                add(p7);
+                add(p8);
+                add(p9);
+                //params = this.arguments;
+                //let func = _func.bind(_area);//не работает
+                
+                let newParams = _params.slice(0);
+                for(param of params){//на места параметров undefined подставляет переданные параметры в порядке следования
+                    for(let i = 0; i < newParams.length; i++){
+                        if(newParams[i] === undefined){
+                            newParams[i] = param;
+                            break;
+                        }
+                    }
+                }
+                //return (_func.bind(area)).call(3,4);
+                //return _func.apply(_area, [2,3]);
+                return _func.apply(_area, newParams);//это работает
+            }
+        }
+        var pow5 = myBind(Math.pow, Math, [undefined, 5])
+        var cube = myBind(Math.pow, Math, [undefined, 3]) 
+
+        console.log(pow5(2))//32
+        console.log(cube(3))//27
+
+        var chessMin = myBind(Math.min, Math, [undefined, 4, undefined, 5,undefined, 8,undefined, 9])
+        console.log(chessMin(-1,-5,3,15)) // вызывает Math.min(-1, 4, -5, 5, 3, 8, 15, 9), результат -5
+
+        // var zeroPrompt = myBind(prompt, window, [undefined, "0"])
+        // var someNumber = zeroPrompt("Введите число")  
+        // console.log(someNumber)
+
+        console.log(myBind((...params) => params.join(''), null, [undefined, 'b', undefined, undefined, 'e', 'f'])('a','c','d') === 'abcdef')
+    </script>
+</body>
+</html>
